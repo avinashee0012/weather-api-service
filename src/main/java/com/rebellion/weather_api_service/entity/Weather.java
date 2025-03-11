@@ -1,24 +1,37 @@
 package com.rebellion.weather_api_service.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Weather {
-    // TODO: More fields to be added here
+
     private String address;
     private String resolvedAddress;
     private double latitude;
     private double longitude;
+    private List<Day> days;
     private LocalDateTime fetchTime;
-    // private List<Day> days;
+
+    public Weather(String address, String resolvedAddress, double latitude, double longitude, List<Day> days) {
+        this.address = address;
+        this.resolvedAddress = resolvedAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.days = days;
+    }
+
+    public Weather() {
+        setFetchTime();
+    }
 
     public LocalDateTime getFetchTime() {
         return fetchTime;
     }
 
-    public void setFetchTime(LocalDateTime fetchTime) {
-        this.fetchTime = fetchTime;
+    public void setFetchTime() {
+        this.fetchTime = LocalDateTime.now();
     }
 
     public double getLatitude() {
@@ -53,65 +66,112 @@ public class Weather {
         this.address = address;
     }
 
-    // public List<Day> getDays() {
-    //     return days;
-    // }
+    public List<Day> getDays() {
+        return days;
+    }
 
-    // public void setDays(List<Day> days) {
-    //     this.days = days;
-    // }
+    public void setDays(List<Day> days) {
+        this.days = days;
+    }
 
 }
 
-// class Day {
-//     private String datetime;
-//     private double temp;
-//     private double feelslike;
-//     private List<Hour> hours;
+class Day {
+    private String datetime;
+    private double temp;
+    private double feelslike;
+    private List<Hour> hours;
 
-//     public String getDatetime() {
-//         return datetime;
-//     }
+    public Day(String datetime, double temp, double feelslike, List<Hour> hours) {
+        this.datetime = datetime;
+        this.temp = temp;
+        this.feelslike = feelslike;
+        this.hours = hours;
+    }
 
-//     public void setDatetime(String datetime) {
-//         this.datetime = datetime;
-//     }
+    public Day() {
+    }
 
-//     public double getTemp() {
-//         return temp;
-//     }
+    public String getDatetime() {
+        return datetime;
+    }
 
-//     public void setTemp(double temp) {
-//         this.temp = temp;
-//     }
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
+    }
 
-//     public double getFeelslike() {
-//         return feelslike;
-//     }
+    public double getTemp() {
+        return temp;
+    }
 
-//     public void setFeelslike(double feelslike) {
-//         this.feelslike = feelslike;
-//     }
+    public void setTemp(double temp) {
+        this.temp = temp;
+    }
 
-//     public List<Hour> getHours() {
-//         return hours;
-//     }
+    public double getFeelslike() {
+        return feelslike;
+    }
 
-//     public void setHours(List<Hour> hours) {
-//         this.hours = hours;
-//     }
+    public void setFeelslike(double feelslike) {
+        this.feelslike = feelslike;
+    }
 
-// }
+    public List<Hour> getHours() {
+        return hours;
+    }
 
-// class Hour {
-//     private String datetime;
+    public void setHours(List<Hour> hours) {
+        this.hours = hours;
+    }
 
-//     public String getDatetime() {
-//         return datetime;
-//     }
+}
 
-//     public void setDatetime(String datetime) {
-//         this.datetime = datetime;
-//     }
+class Hour {
+    private String datetime;
+    private double temp;
+    private double feelslike;
+    private double humidity;
 
-// }
+    public Hour(String datetime, double temp, double feelslike, double humidity) {
+        this.datetime = datetime;
+        this.temp = temp;
+        this.feelslike = feelslike;
+        this.humidity = humidity;
+    }
+
+    public Hour() {
+    }
+
+    public String getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
+    }
+
+    public double getTemp() {
+        return temp;
+    }
+
+    public void setTemp(double temp) {
+        this.temp = temp;
+    }
+
+    public double getFeelslike() {
+        return feelslike;
+    }
+
+    public void setFeelslike(double feelslike) {
+        this.feelslike = feelslike;
+    }
+
+    public double getHumidity() {
+        return humidity;
+    }
+
+    public void setHumidity(double humidity) {
+        this.humidity = humidity;
+    }
+
+}
