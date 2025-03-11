@@ -17,9 +17,7 @@ import com.rebellion.weather_api_service.service.WeatherService;
 public class WeatherServiceImpl implements WeatherService {
 
     private final ObjectMapper mapper;
-    // private final String key = "your_visualcrossing_key";
-    // TODO: Remove key
-    private final String key = "MSM92WRGS5BRUMVSTANQ9KPM3";
+    private final String key = "your_visualcrossing_key";
 
     public WeatherServiceImpl(ObjectMapper mapper) {
         this.mapper = mapper;
