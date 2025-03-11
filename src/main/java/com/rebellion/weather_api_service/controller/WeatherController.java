@@ -4,13 +4,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rebellion.weather_api_service.entity.Weather;
 import com.rebellion.weather_api_service.serviceImpl.WeatherServiceImpl;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api")
 public class WeatherController {
 
     private WeatherServiceImpl weatherServiceImpl;
@@ -21,21 +20,21 @@ public class WeatherController {
 
     @GetMapping("")
 	public String getHome() {
-		return new String("Weather Service: Home Page");
+		return new String("Weather Service: API Home Page");
 	}
 
-    @GetMapping("{location}")
+    @GetMapping("weather/{location}")
     public Weather getLocationWeatherData(@PathVariable String location) {
         return weatherServiceImpl.getWeatherByLocation(location);
     }
 
-    @GetMapping("{location}/{startdate}")
-    public String getLocationWeatherDataForDate(@PathVariable String location, @PathVariable String startdate) {
-        return new String("getLocationWeatherDataForDate(" + location + ", " + startdate + ")");
+    @GetMapping("weather/{location}/{startdate}")
+    public Weather getLocationWeatherDataForDate(@PathVariable String location, @PathVariable String startdate) {
+        return weatherServiceImpl.getWeatherByLocationStartDate(location, startdate);
     }
     
-    @GetMapping("{location}/{startdate}/{enddate}")
-    public String getLocationWeatherDataForDatePeriod(@PathVariable String location, @PathVariable String startdate, @PathVariable String enddate) {
-        return new String("getLocationWeatherDataForDatePeriod(" + location + ", " + startdate + ", " + enddate + ")");
+    @GetMapping("weather/{location}/{startdate}/{enddate}")
+    public Weather getLocationWeatherDataForDatePeriod(@PathVariable String location, @PathVariable String startdate, @PathVariable String enddate) {
+        return weatherServiceImpl.getWeatherByLocationStartDateEndDate(location, startdate, enddate);
     }
 }
