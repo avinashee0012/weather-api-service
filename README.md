@@ -4,7 +4,7 @@ This service returns weather data. Instead of relying on own weather data, it fe
 
 ### Technologies Used:
 - **Frontend:** Java, CSS and JS
-- **Backend:** Java, Springboot, Rest API, Jackson, Redis, 3rd Party API integration
+- **Backend:** Java, Springboot, Rest API, Jackson, 3rd Party API integration, Redis
 - **Source Code Management:** Git, GitHub, Maven
 
 ### Installation
