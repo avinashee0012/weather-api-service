@@ -18,18 +18,16 @@ public class WeatherServiceImpl implements WeatherService {
 
     private final ObjectMapper mapper;
     private RedisServiceImpl redisServiceImpl;
-    
-    private final String key = "your_visualcrossing_key";
 
     public WeatherServiceImpl(ObjectMapper mapper, RedisServiceImpl redisServiceImpl) {
         this.mapper = mapper;
         this.redisServiceImpl = redisServiceImpl;
     }
 
-    @Override 
-    public ResponseEntity<?> getWeatherByLocation(String location) {
+    @Override
+    public ResponseEntity<?> getWeatherByLocation(String location, String key) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        if(redisServiceImpl.get("weather_of_" + location, Weather.class) != null) {
+        if (redisServiceImpl.get("weather_of_" + location, Weather.class) != null) {
             status = HttpStatus.ALREADY_REPORTED;
             return new ResponseEntity<>(redisServiceImpl.get("weather_of_" + location, Weather.class), status);
         } else {
@@ -40,74 +38,113 @@ public class WeatherServiceImpl implements WeatherService {
                         .method("GET", HttpRequest.BodyPublishers.noBody()).build();
                 HttpResponse<String> response = HttpClient.newHttpClient()
                         .send(request, HttpResponse.BodyHandlers.ofString());
-                Weather weather = mapper.readValue(response.body(), Weather.class);
-                status = HttpStatus.FOUND;
-                if(weather != null) {
-                    redisServiceImpl.set("weather_of_" + location, weather, 300L);
+                if (response.statusCode() == 401) {
+                    status = HttpStatus.UNAUTHORIZED;
+                    return new ResponseEntity<>(new String("Unauthorized Access Denied"), status);
                 }
-                return new ResponseEntity<>(weather, status);
+                if (response.statusCode() == 200) {
+                    Weather weather = mapper.readValue(response.body(), Weather.class);
+                    status = HttpStatus.FOUND;
+                    if (weather != null) {
+                        redisServiceImpl.set("weather_of_" + location, weather, 300L);
+                    }
+                    return new ResponseEntity<>(weather, status);
+                }
+                if(response.statusCode() != 401 || response.statusCode() != 200) {
+                    throw new Exception();
+                }
             } catch (Exception e) {
                 System.out.println("Exception: visualcrossing API --> getWeatherByLocation(String location)");
                 status = HttpStatus.EXPECTATION_FAILED;
                 return new ResponseEntity<>(new Weather(), status);
             }
         }
+        return new ResponseEntity<>(new Weather(), status);
     }
 
     @Override
-    public ResponseEntity<?> getWeatherByLocationStartDate(String location, String startdate) {
+    public ResponseEntity<?> getWeatherByLocationStartDate(String location, String startdate, String key) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        if(redisServiceImpl.get("weather_of_" + location + "_" + startdate, Weather.class) != null) {
+        if (redisServiceImpl.get("weather_of_" + location + "_" + startdate, Weather.class) != null) {
             status = HttpStatus.ALREADY_REPORTED;
-            return new ResponseEntity<>(redisServiceImpl.get("weather_of_" + location + "_" + startdate, Weather.class), status);
+            return new ResponseEntity<>(redisServiceImpl.get("weather_of_" + location + "_" + startdate, Weather.class),
+                    status);
         } else {
             String baseUrl = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline";
             try {
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(String.format("%s/%s/%s?key=%s&contentType=json", baseUrl, location, startdate, key)))
+                        .uri(URI.create(
+                                String.format("%s/%s/%s?key=%s&contentType=json", baseUrl, location, startdate, key)))
                         .method("GET", HttpRequest.BodyPublishers.noBody()).build();
                 HttpResponse<String> response = HttpClient.newHttpClient()
                         .send(request, HttpResponse.BodyHandlers.ofString());
-                Weather weather = mapper.readValue(response.body(), Weather.class);
-                status = HttpStatus.FOUND;
-                if(weather != null) {
-                    redisServiceImpl.set("weather_of_" + location + "_" + startdate, weather, 300L);
+
+                if (response.statusCode() == 401) {
+                    status = HttpStatus.UNAUTHORIZED;
+                    return new ResponseEntity<>(new String("Unauthorized Access Denied"), status);
                 }
-                return new ResponseEntity<>(weather, status);
+                if (response.statusCode() == 200) {
+                    Weather weather = mapper.readValue(response.body(), Weather.class);
+                    status = HttpStatus.FOUND;
+                    if (weather != null) {
+                        redisServiceImpl.set("weather_of_" + location + "_" + startdate, weather, 300L);
+                    }
+                    return new ResponseEntity<>(weather, status);
+                }
+                if(response.statusCode() != 401 || response.statusCode() != 200) {
+                    throw new Exception();
+                }
             } catch (Exception e) {
-                System.out.println("Exception: visualcrossing API --> getWeatherByLocationStartDate(String location, String startdate)");
+                System.out.println(
+                        "Exception: visualcrossing API --> getWeatherByLocationStartDate(String location, String startdate)");
                 status = HttpStatus.EXPECTATION_FAILED;
                 return new ResponseEntity<>(new Weather(), status);
             }
         }
+        return new ResponseEntity<>(new Weather(), status);
     }
 
     @Override
-    public ResponseEntity<?> getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate) {
+    public ResponseEntity<?> getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate,
+            String key) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        if(redisServiceImpl.get("weather_of_" + location + "_" + startdate + "_" + enddate, Weather.class) != null) {
+        if (redisServiceImpl.get("weather_of_" + location + "_" + startdate + "_" + enddate, Weather.class) != null) {
             status = HttpStatus.ALREADY_REPORTED;
-            return new ResponseEntity<>(redisServiceImpl.get("weather_of_" + location + "_" + startdate + "_" + enddate, Weather.class), status);
+            return new ResponseEntity<>(
+                    redisServiceImpl.get("weather_of_" + location + "_" + startdate + "_" + enddate, Weather.class),
+                    status);
         } else {
             String baseUrl = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline";
             try {
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(String.format("%s/%s/%s/%s?key=%s&contentType=json", baseUrl, location, startdate, enddate, key)))
+                        .uri(URI.create(String.format("%s/%s/%s/%s?key=%s&contentType=json", baseUrl, location,
+                                startdate, enddate, key)))
                         .method("GET", HttpRequest.BodyPublishers.noBody()).build();
                 HttpResponse<String> response = HttpClient.newHttpClient()
                         .send(request, HttpResponse.BodyHandlers.ofString());
-                Weather weather = mapper.readValue(response.body(), Weather.class);
-                status = HttpStatus.FOUND;
-                if(weather != null) {
-                    redisServiceImpl.set("weather_of_" + location + "_" + startdate + "_" + enddate, weather, 300L);
+                if (response.statusCode() == 401) {
+                    status = HttpStatus.UNAUTHORIZED;
+                    return new ResponseEntity<>(new String("Unauthorized Access Denied"), status);
                 }
-                return new ResponseEntity<>(weather, status);
+                if (response.statusCode() == 200) {
+                    Weather weather = mapper.readValue(response.body(), Weather.class);
+                    status = HttpStatus.FOUND;
+                    if (weather != null) {
+                        redisServiceImpl.set("weather_of_" + location + "_" + startdate + "_" + enddate, weather, 300L);
+                    }
+                    return new ResponseEntity<>(weather, status);
+                }
+                if(response.statusCode() != 401 || response.statusCode() != 200) {
+                    throw new Exception();
+                }
             } catch (Exception e) {
-                System.out.println("Exception: visualcrossing API --> getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate)");
+                System.out.println(
+                        "Exception: visualcrossing API --> getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate)");
                 status = HttpStatus.EXPECTATION_FAILED;
                 return new ResponseEntity<>(new Weather(), status);
             }
         }
+        return new ResponseEntity<>(new Weather(), status);
     }
 
 }
