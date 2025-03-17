@@ -5,13 +5,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rebellion.weather_api_service.entity.Weather;
 import com.rebellion.weather_api_service.service.WeatherService;
-
-// TODO: Handle response status codes
-// https://www.visualcrossing.com/resources/documentation/weather-api/timeline-weather-api/#response-codes
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
@@ -27,9 +27,11 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override 
-    public Weather getWeatherByLocation(String location) {
+    public ResponseEntity<?> getWeatherByLocation(String location) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         if(redisServiceImpl.get("weather_of_" + location, Weather.class) != null) {
-            return redisServiceImpl.get("weather_of_" + location, Weather.class);
+            status = HttpStatus.ALREADY_REPORTED;
+            return new ResponseEntity<>(redisServiceImpl.get("weather_of_" + location, Weather.class), status);
         } else {
             String baseUrl = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline";
             try {
@@ -39,21 +41,25 @@ public class WeatherServiceImpl implements WeatherService {
                 HttpResponse<String> response = HttpClient.newHttpClient()
                         .send(request, HttpResponse.BodyHandlers.ofString());
                 Weather weather = mapper.readValue(response.body(), Weather.class);
+                status = HttpStatus.FOUND;
                 if(weather != null) {
                     redisServiceImpl.set("weather_of_" + location, weather, 300L);
                 }
-                return weather;
+                return new ResponseEntity<>(weather, status);
             } catch (Exception e) {
                 System.out.println("Exception: visualcrossing API --> getWeatherByLocation(String location)");
+                status = HttpStatus.EXPECTATION_FAILED;
+                return new ResponseEntity<>(new Weather(), status);
             }
         }
-        return new Weather();
     }
 
     @Override
-    public Weather getWeatherByLocationStartDate(String location, String startdate) {
+    public ResponseEntity<?> getWeatherByLocationStartDate(String location, String startdate) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         if(redisServiceImpl.get("weather_of_" + location + "_" + startdate, Weather.class) != null) {
-            return redisServiceImpl.get("weather_of_" + location + "_" + startdate, Weather.class);
+            status = HttpStatus.ALREADY_REPORTED;
+            return new ResponseEntity<>(redisServiceImpl.get("weather_of_" + location + "_" + startdate, Weather.class), status);
         } else {
             String baseUrl = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline";
             try {
@@ -63,21 +69,25 @@ public class WeatherServiceImpl implements WeatherService {
                 HttpResponse<String> response = HttpClient.newHttpClient()
                         .send(request, HttpResponse.BodyHandlers.ofString());
                 Weather weather = mapper.readValue(response.body(), Weather.class);
+                status = HttpStatus.FOUND;
                 if(weather != null) {
                     redisServiceImpl.set("weather_of_" + location + "_" + startdate, weather, 300L);
                 }
-                return weather;
+                return new ResponseEntity<>(weather, status);
             } catch (Exception e) {
                 System.out.println("Exception: visualcrossing API --> getWeatherByLocationStartDate(String location, String startdate)");
+                status = HttpStatus.EXPECTATION_FAILED;
+                return new ResponseEntity<>(new Weather(), status);
             }
         }
-        return new Weather();
     }
 
     @Override
-    public Weather getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate) {
+    public ResponseEntity<?> getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         if(redisServiceImpl.get("weather_of_" + location + "_" + startdate + "_" + enddate, Weather.class) != null) {
-            return redisServiceImpl.get("weather_of_" + location + "_" + startdate + "_" + enddate, Weather.class);
+            status = HttpStatus.ALREADY_REPORTED;
+            return new ResponseEntity<>(redisServiceImpl.get("weather_of_" + location + "_" + startdate + "_" + enddate, Weather.class), status);
         } else {
             String baseUrl = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline";
             try {
@@ -87,15 +97,17 @@ public class WeatherServiceImpl implements WeatherService {
                 HttpResponse<String> response = HttpClient.newHttpClient()
                         .send(request, HttpResponse.BodyHandlers.ofString());
                 Weather weather = mapper.readValue(response.body(), Weather.class);
+                status = HttpStatus.FOUND;
                 if(weather != null) {
                     redisServiceImpl.set("weather_of_" + location + "_" + startdate + "_" + enddate, weather, 300L);
                 }
-                return weather;
+                return new ResponseEntity<>(weather, status);
             } catch (Exception e) {
                 System.out.println("Exception: visualcrossing API --> getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate)");
+                status = HttpStatus.EXPECTATION_FAILED;
+                return new ResponseEntity<>(new Weather(), status);
             }
         }
-        return new Weather();
     }
 
 }

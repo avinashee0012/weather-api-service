@@ -1,9 +1,9 @@
 package com.rebellion.weather_api_service.service;
 
-import com.rebellion.weather_api_service.entity.Weather;
+import org.springframework.http.ResponseEntity;
 
 public interface WeatherService {
-    Weather getWeatherByLocation(String location);
-    Weather getWeatherByLocationStartDate(String location, String startdate);
-    Weather getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate);
+    ResponseEntity<?> getWeatherByLocation(String location);
+    ResponseEntity<?> getWeatherByLocationStartDate(String location, String startdate);
+    ResponseEntity<?> getWeatherByLocationStartDateEndDate(String location, String startdate, String enddate);
 }

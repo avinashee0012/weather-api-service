@@ -1,6 +1,5 @@
 package com.rebellion.weather_api_service.entity;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,7 +11,6 @@ public class Weather {
     private double latitude;
     private double longitude;
     private List<Day> days;
-    private LocalDateTime fetchTime;
 
     public Weather(String address, String resolvedAddress, double latitude, double longitude, List<Day> days) {
         this.address = address;
@@ -23,15 +21,6 @@ public class Weather {
     }
 
     public Weather() {
-        setFetchTime();
-    }
-
-    public LocalDateTime getFetchTime() {
-        return fetchTime;
-    }
-
-    public void setFetchTime() {
-        this.fetchTime = LocalDateTime.now();
     }
 
     public double getLatitude() {

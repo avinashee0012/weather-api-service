@@ -3,6 +3,7 @@ package com.rebellion.weather_api_service;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+// TODO: Create frontend pages
 @SpringBootApplication
 public class WeatherApiServiceApplication {
 
